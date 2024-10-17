@@ -6,7 +6,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import BookingItem from "../../booking-item";
 import NewBooking from "../new-booking";
 import EditAsset from "../edit";
 import DeleteAsset from "../delete";
@@ -72,13 +71,7 @@ export default async function Asset({ params }: { params: { id: string } }) {
 					<CardContent className="p-6">
 						<div className="space-y-5">
 							{asset.bookings.map((booking) => {
-								return (
-									<BookingItem
-										booking={booking}
-										asset={asset}
-										user={booking.user}
-									/>
-								);
+								return "Hola";
 							})}
 						</div>
 					</CardContent>
