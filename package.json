@@ -5,7 +5,6 @@
 		"build": "next build",
 		"start": "next start",
 		"db:setup": "npx tsx lib/db/setup.ts",
-		"db:seed": "npx tsx lib/db/seed.ts",
 		"db:seedAssets": "npx tsx lib/db/seedAssets.ts",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "npx tsx lib/db/migrate.ts",
