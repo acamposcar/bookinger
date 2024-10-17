@@ -41,7 +41,9 @@ export default async function Asset({ params }: { params: { id: string } }) {
 				</CardHeader>
 				<CardContent className="p-6">
 					<div className="flex gap-4 justify-between items-center">
-						{asset.image && <img src={asset.image} className="max-w-64" />}
+						{asset.image && (
+							<img src={asset.image} className="max-w-64" alt={asset.name} />
+						)}
 						<div className="flex space-x-2 mt-4 justify-between">
 							<NewBooking asset={asset} />
 
