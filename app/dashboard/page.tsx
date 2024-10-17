@@ -1,7 +1,15 @@
 import { getMyBookings } from "@/lib/db/queries";
 
 import Image from "next/image";
-import { Download, ListFilter, MoreHorizontal, PlusCircle } from "lucide-react";
+import {
+	CheckIcon,
+	Download,
+	ListFilter,
+	MoreHorizontal,
+	PlusCircle,
+	Wrench,
+	XIcon,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditBooking from "./edit";
 import DeleteBooking from "./delete";
 import AddBooking from "./add";
+import Link from "next/link";
 
 export default async function MyBookings() {
 	const bookings = await getMyBookings();
@@ -134,10 +143,12 @@ export default async function MyBookings() {
 												/>
 											</TableCell>
 											<TableCell className="font-medium">
-												{booking.asset.name}{" "}
-												<span className="text-muted-foreground font-normal hidden md:inline-block">
-													({booking.asset.assetTag})
-												</span>
+												<Link href={`/dashboard/assets/${booking.asset.id}`}>
+													{booking.asset.name}{" "}
+													<span className="text-muted-foreground font-normal hidden md:inline-block">
+														({booking.asset.assetTag})
+													</span>
+												</Link>
 											</TableCell>
 											<TableCell>{booking.project}</TableCell>
 											<TableCell className="hidden md:table-cell">
@@ -154,21 +165,17 @@ export default async function MyBookings() {
 												<div>{booking.end.toLocaleDateString()}</div>
 											</TableCell>
 											<TableCell className="hidden md:table-cell">
-												{booking.asset.status === "deployable" ? (
-													<Badge
-														variant="outline"
-														className="text-green-600 border-green-600"
-													>
-														{booking.asset.status}
-													</Badge>
-												) : (
-													<Badge
-														variant="outline"
-														className="text-red-600 border-red-600"
-													>
-														{booking.asset.status}
-													</Badge>
+												{booking.asset.status === "deployable" && (
+													<CheckIcon className="h-4 w-4 text-green-600" />
 												)}
+												{booking.asset.status === "undeployable" && (
+													<XIcon className="h-4 w-4 text-red-600" />
+												)}
+
+												{booking.asset.status !== "deployable" &&
+													booking.asset.status !== "undeployable" && (
+														<Wrench className="h-4 w-4 text-sky-600" />
+													)}
 											</TableCell>
 											<TableCell>
 												<div className="flex gap-2 items-center">

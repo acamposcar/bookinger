@@ -1,7 +1,16 @@
-import { getAssets } from "@/lib/db/queries";
+import { getAssets, searchAssetsBySimilarity } from "@/lib/db/queries";
 
 import Image from "next/image";
-import { Download, ListFilter, MoreHorizontal, PlusCircle } from "lucide-react";
+import {
+	CheckIcon,
+	Download,
+	Drill,
+	ListFilter,
+	MoreHorizontal,
+	PlusCircle,
+	Wrench,
+	XIcon,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,9 +46,17 @@ import AddBooking from "./add";
 import DeleteAsset from "./delete";
 import EditAsset from "./edit";
 import NewBooking from "./new-booking";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
-export default async function Assets() {
-	const assets = await getAssets();
+export default async function AssetsPage({
+	searchParams,
+}: {
+	searchParams: { [key: string]: string };
+}) {
+	const assets = searchParams.q
+		? await searchAssetsBySimilarity({ searchTerm: searchParams.q })
+		: await getAssets();
 
 	return (
 		<Tabs defaultValue="all">
@@ -116,47 +133,38 @@ export default async function Assets() {
 									{assets.map((asset) => (
 										<TableRow key={asset.id}>
 											<TableCell className="hidden md:table-cell">
-												<Image
-													alt={asset.name}
-													className="aspect-square rounded-md object-cover"
-													height="64"
-													src={asset.image || "https://via.placeholder.com/64"}
-													width="64"
-												/>
+												<Link href={`/dashboard/assets/${asset.id}`}>
+													<Image
+														alt={asset.name}
+														className="aspect-square rounded-md object-cover"
+														height="64"
+														src={
+															asset.image || "https://via.placeholder.com/64"
+														}
+														width="64"
+													/>
+												</Link>
 											</TableCell>
 											<TableCell className="font-medium">
-												{asset.name}{" "}
-												<span className="text-muted-foreground font-normal hidden md:inline-block">
-													({asset.assetTag})
-												</span>
+												<Link href={`/assets/${asset.id}`}>
+													{asset.name}{" "}
+													<span className="text-muted-foreground font-normal hidden md:inline-block">
+														({asset.assetTag})
+													</span>
+												</Link>
 											</TableCell>
 
 											<TableCell>
 												{asset.status === "deployable" && (
-													<Badge
-														variant="outline"
-														className="text-green-600 border-green-600"
-													>
-														{asset.status}
-													</Badge>
+													<CheckIcon className="h-4 w-4 text-green-600" />
 												)}
 												{asset.status === "undeployable" && (
-													<Badge
-														variant="outline"
-														className="text-red-600 border-red-600"
-													>
-														{asset.status}
-													</Badge>
+													<XIcon className="h-4 w-4 text-red-600" />
 												)}
 
 												{asset.status !== "deployable" &&
 													asset.status !== "undeployable" && (
-														<Badge
-															variant="outline"
-															className="text-blue-600 border-blue-600"
-														>
-															{asset.status}
-														</Badge>
+														<Wrench className="h-4 w-4 text-sky-600" />
 													)}
 											</TableCell>
 											<TableCell>{asset.assetTag}</TableCell>

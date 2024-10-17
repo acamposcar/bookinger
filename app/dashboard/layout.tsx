@@ -43,6 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const { user, setUser } = useUser();
 	const router = useRouter();
 	const pathname = usePathname();
+	const [searchQuery, setSearchQuery] = useState("");
 
 	async function handleSignOut() {
 		setUser(null);
@@ -56,6 +57,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		{ href: "/dashboard/team", icon: Users2, label: "Team" },
 		{ href: "/dashboard/activity", icon: LineChart, label: "Activity" },
 	];
+
+	function handleSearch(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+		router.push(`/dashboard/assets?q=${searchQuery}`);
+	}
 
 	return (
 		<section className="flex flex-col min-h-screen">
@@ -145,14 +151,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 							</SheetContent>
 						</Sheet>
 
-						<div className="relative ml-auto flex-1 md:grow-0">
+						<form
+							onSubmit={handleSearch}
+							className="relative ml-auto flex-1 md:grow-0"
+						>
 							<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
 							<Input
 								type="search"
 								placeholder="Search..."
 								className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
 							/>
-						</div>
+						</form>
 						{user ? (
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
