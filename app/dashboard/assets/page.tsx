@@ -146,7 +146,7 @@ export default async function AssetsPage({
 												</Link>
 											</TableCell>
 											<TableCell className="font-medium">
-												<Link href={`/assets/${asset.id}`}>
+												<Link href={`/dashboard/assets/${asset.id}`}>
 													{asset.name}{" "}
 													<span className="text-muted-foreground font-normal hidden md:inline-block">
 														({asset.assetTag})
