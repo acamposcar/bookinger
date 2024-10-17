@@ -1,4 +1,4 @@
-import { assetsData } from "@/app/(old)/old/assets/assets-data";
+import { assetsData } from "./assets-mock";
 import { db } from "./drizzle";
 import { assets } from "./schema";
 
