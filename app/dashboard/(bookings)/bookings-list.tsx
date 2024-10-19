@@ -56,7 +56,7 @@ export default async function BookingsList({
 	isMyBookings: boolean;
 }) {
 	const user = await getUser();
-
+	console.log(bookings);
 	return (
 		<Tabs defaultValue="all">
 			<div className="flex items-center">
@@ -179,14 +179,14 @@ export default async function BookingsList({
 													{booking.description}
 												</TableCell>
 												<TableCell className="hidden md:table-cell">
-													{booking.start.toLocaleDateString()}
+													{booking.start?.toLocaleDateString()}
 												</TableCell>
 												<TableCell className="hidden md:table-cell">
-													{booking.end.toLocaleDateString()}
+													{booking.end?.toLocaleDateString()}
 												</TableCell>
 												<TableCell className="table-cell md:hidden">
-													<div>{booking.start.toLocaleDateString()}</div>
-													<div>{booking.end.toLocaleDateString()}</div>
+													<div>{booking.start?.toLocaleDateString()}</div>
+													<div>{booking.end?.toLocaleDateString()}</div>
 												</TableCell>
 												<TableCell className="hidden md:table-cell">
 													{booking.asset.status === "deployable" && (

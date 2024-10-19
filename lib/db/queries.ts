@@ -10,7 +10,7 @@ import {
 } from "./schema";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/session";
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
 export async function getUser() {
 	const sessionCookie = cookies().get("session");
@@ -93,20 +93,27 @@ export async function getBookings() {
 	});
 }
 
-export const getMyBookings = cache(async () => {
+export const getMyBookingsCached = unstable_cache(
+	async (userId: string) => {
+		return await db.query.bookings.findMany({
+			with: {
+				asset: true,
+				user: true,
+			},
+			where: eq(bookings.userId, userId),
+			orderBy: (bookings, { asc }) => [asc(bookings.start)],
+		});
+	},
+	["my-bookings"],
+);
+
+export async function getMyBookings() {
 	const user = await getUser();
 	if (!user) {
 		throw new Error("User not authenticated");
 	}
-	return await db.query.bookings.findMany({
-		with: {
-			asset: true,
-			user: true,
-		},
-		where: eq(bookings.userId, user.id),
-		orderBy: (bookings, { asc }) => [asc(bookings.start)],
-	});
-});
+	return await getMyBookingsCached(user.id);
+}
 
 export async function getAssetBookings(assetId: string) {
 	const user = await getUser();
@@ -123,21 +130,23 @@ export async function getAssetBookings(assetId: string) {
 	});
 }
 
-export const getBooking = cache(async (bookingId: string) => {
+export const getBookingCached = unstable_cache(
+	async (bookingId: string) => {
+		return await db.select().from(bookings).where(eq(bookings.id, bookingId));
+	},
+	["booking"],
+);
+
+export async function getBooking(bookingId: string) {
 	const user = await getUser();
 	if (!user) {
 		throw new Error("User not authenticated");
 	}
 
-	return await db.select().from(bookings).where(eq(bookings.id, bookingId));
-});
+	return await getBookingCached(bookingId);
+}
 
-export const getAssets = cache(async () => {
-	const user = await getUser();
-	if (!user) {
-		throw new Error("User not authenticated");
-	}
-
+export const getAssetsCached = unstable_cache(async () => {
 	return await db.query.assets.findMany({
 		with: {
 			bookings: {
@@ -148,7 +157,16 @@ export const getAssets = cache(async () => {
 		orderBy: (assets, { asc }) => [asc(assets.createdAt)],
 		limit: 40,
 	});
-});
+}, ["assets"]);
+
+export async function getAssets() {
+	const user = await getUser();
+	if (!user) {
+		throw new Error("User not authenticated");
+	}
+
+	return await getAssetsCached();
+}
 
 export async function searchAsset(query: string) {
 	const user = await getUser();
