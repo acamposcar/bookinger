@@ -40,16 +40,16 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EditBooking from "./edit";
-import DeleteBooking from "./delete";
-import AddBooking from "./add";
-import DeleteAsset from "./delete";
-import EditAsset from "./edit";
-import NewBooking from "./new-booking";
+import EditBooking from "./_components/edit";
+import DeleteBooking from "./_components/delete";
+import AddBooking from "./_components/add";
+import DeleteAsset from "./_components/delete";
+import EditAsset from "./_components/edit";
+import NewBooking from "./_components/new-booking";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Suspense } from "react";
-import LoadingSpinner from "../loading-spinner";
+import LoadingSpinner from "../../../components/loading-spinner";
 
 export default async function AssetsPage({
 	searchParams,

@@ -46,7 +46,7 @@ import Link from "next/link";
 import type { Asset, Booking, User } from "@/lib/db/schema";
 import { is } from "drizzle-orm";
 import { Suspense } from "react";
-import LoadingSpinner from "./loading-spinner";
+import LoadingSpinner from "../../../components/loading-spinner";
 
 export default async function BookingsList({
 	isMyBookings,

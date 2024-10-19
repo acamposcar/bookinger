@@ -6,9 +6,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import NewBooking from "../new-booking";
-import EditAsset from "../edit";
-import DeleteAsset from "../delete";
+import NewBooking from "../_components/new-booking";
+import EditAsset from "../_components/edit";
+import DeleteAsset from "../_components/delete";
 import { bookings } from "@/lib/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ import {
 	TableHead,
 	TableRow,
 } from "@/components/ui/table";
-import BookingsList from "../../bookings-list";
+import BookingsList from "../../(bookings)/bookings-list";
 
 export default async function Asset({ params }: { params: { id: string } }) {
 	const asset = await getAsset(params.id);

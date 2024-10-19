@@ -15,7 +15,7 @@ import { useActionState } from "react";
 import type { ActionState } from "@/lib/auth/middleware";
 import { Book, Calendar, Loader2, Plus } from "lucide-react";
 import { set } from "date-fns";
-import { addBooking } from "../actions";
+import { addBooking } from "../../(bookings)/actions";
 import type { Asset } from "@/lib/db/schema";
 
 export default function NewBooking({ asset }: { asset: Asset }) {

@@ -1,5 +1,5 @@
 import { getBookings } from "@/lib/db/queries";
-import BookingsList from "../bookings-list";
+import BookingsList from "../(bookings)/bookings-list";
 import CalendarComponent from "./calendar";
 
 function generateColorFromUserId(userId: string) {

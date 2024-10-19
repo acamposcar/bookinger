@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Asset } from "@/lib/db/schema";
 import { startTransition, useActionState, useState } from "react";
-import { editAsset } from "./actions";
+import { editAsset } from "../actions";
 import type { ActionState } from "@/lib/auth/middleware";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -13,7 +13,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteAsset } from "./actions";
+import { deleteAsset } from "../actions";
 
 export default function DeleteAsset({ assetId }: { assetId: string }) {
 	const [state, removeAction, isRemovePending] = useActionState<
