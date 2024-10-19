@@ -15,6 +15,8 @@ export const viewport: Viewport = {
 
 const manrope = Manrope({ subsets: ["latin"] });
 
+export const revalidate = 3600; // revalidate the data at most every hour
+
 export default function RootLayout({
 	children,
 }: {

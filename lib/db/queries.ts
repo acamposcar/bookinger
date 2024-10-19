@@ -10,6 +10,7 @@ import {
 } from "./schema";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/session";
+import { cache } from "react";
 
 export async function getUser() {
 	const sessionCookie = cookies().get("session");
@@ -92,7 +93,7 @@ export async function getBookings() {
 	});
 }
 
-export async function getMyBookings() {
+export const getMyBookings = cache(async () => {
 	const user = await getUser();
 	if (!user) {
 		throw new Error("User not authenticated");
@@ -105,7 +106,7 @@ export async function getMyBookings() {
 		where: eq(bookings.userId, user.id),
 		orderBy: (bookings, { asc }) => [asc(bookings.start)],
 	});
-}
+});
 
 export async function getAssetBookings(assetId: string) {
 	const user = await getUser();
@@ -122,22 +123,20 @@ export async function getAssetBookings(assetId: string) {
 	});
 }
 
-export async function getBooking(bookingId: string) {
+export const getBooking = cache(async (bookingId: string) => {
 	const user = await getUser();
 	if (!user) {
 		throw new Error("User not authenticated");
 	}
 
 	return await db.select().from(bookings).where(eq(bookings.id, bookingId));
-}
+});
 
-export async function getAssets() {
+export const getAssets = cache(async () => {
 	const user = await getUser();
 	if (!user) {
 		throw new Error("User not authenticated");
 	}
-
-	// return await db.select().from(assets).limit(50);
 
 	return await db.query.assets.findMany({
 		with: {
@@ -149,7 +148,7 @@ export async function getAssets() {
 		orderBy: (assets, { asc }) => [asc(assets.createdAt)],
 		limit: 40,
 	});
-}
+});
 
 export async function searchAsset(query: string) {
 	const user = await getUser();

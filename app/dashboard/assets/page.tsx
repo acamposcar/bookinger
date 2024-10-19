@@ -51,6 +51,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import LoadingSpinner from "../../../components/loading-spinner";
 
+export const revalidate = 3600; // revalidate the data at most every hour
+
 export default async function AssetsPage({
 	searchParams,
 }: {
