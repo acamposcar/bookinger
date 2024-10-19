@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Box, Hash, MapPin, QrCode, Tag } from "lucide-react";
-import Placeholder from "@/components/placeholder";
 import {
 	Table,
 	TableBody,

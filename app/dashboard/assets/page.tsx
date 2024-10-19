@@ -48,6 +48,8 @@ import EditAsset from "./edit";
 import NewBooking from "./new-booking";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { Suspense } from "react";
+import LoadingSpinner from "../loading-spinner";
 
 export default async function AssetsPage({
 	searchParams,
@@ -105,83 +107,84 @@ export default async function AssetsPage({
 						<CardDescription>Manage the assets.</CardDescription>
 					</CardHeader>
 					<CardContent>
-						{assets.length === 0 ? (
-							<p className="text-muted-foreground flex items-center justify-center min-h-44">
-								No assets found.
-							</p>
-						) : (
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead className="hidden w-[100px] md:table-cell">
-											<span className="sr-only">Image</span>
-										</TableHead>
-										<TableHead>Name</TableHead>
-										<TableHead>Status</TableHead>
-										<TableHead>Tag</TableHead>
+						<Suspense fallback={<LoadingSpinner />}>
+							{assets.length === 0 ? (
+								<p className="text-muted-foreground flex items-center justify-center min-h-44">
+									No assets found.
+								</p>
+							) : (
+								<Table>
+									<TableHeader>
+										<TableRow>
+											<TableHead className="hidden w-[100px] md:table-cell">
+												<span className="sr-only">Image</span>
+											</TableHead>
+											<TableHead>Name</TableHead>
+											<TableHead>Status</TableHead>
+											<TableHead>Tag</TableHead>
 
-										<TableHead className="hidden md:table-cell">
-											Serial Number
-										</TableHead>
+											<TableHead className="hidden md:table-cell">
+												Serial Number
+											</TableHead>
 
-										<TableHead>
-											<span className="sr-only">Actions</span>
-										</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{assets.map((asset) => (
-										<TableRow key={asset.id}>
-											<TableCell className="hidden md:table-cell">
-												<Link href={`/dashboard/assets/${asset.id}`}>
-													<Image
-														alt={asset.name}
-														className="aspect-square rounded-md object-contain"
-														height="64"
-														src={
-															asset.image || "https://via.placeholder.com/64"
-														}
-														width="64"
-													/>
-												</Link>
-											</TableCell>
-											<TableCell className="font-medium">
-												<Link href={`/dashboard/assets/${asset.id}`}>
-													{asset.name}{" "}
-													<span className="text-muted-foreground font-normal hidden md:inline-block">
-														({asset.assetTag})
-													</span>
-												</Link>
-											</TableCell>
+											<TableHead>
+												<span className="sr-only">Actions</span>
+											</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										{assets.map((asset) => (
+											<TableRow key={asset.id}>
+												<TableCell className="hidden md:table-cell">
+													<Link href={`/dashboard/assets/${asset.id}`}>
+														<Image
+															alt={asset.name}
+															className="aspect-square rounded-md object-contain"
+															height="64"
+															src={
+																asset.image || "https://via.placeholder.com/64"
+															}
+															width="64"
+														/>
+													</Link>
+												</TableCell>
+												<TableCell className="font-medium">
+													<Link href={`/dashboard/assets/${asset.id}`}>
+														{asset.name}{" "}
+														<span className="text-muted-foreground font-normal hidden md:inline-block">
+															({asset.assetTag})
+														</span>
+													</Link>
+												</TableCell>
 
-											<TableCell>
-												{asset.status === "deployable" && (
-													<CheckIcon className="h-4 w-4 text-green-600" />
-												)}
-												{asset.status === "undeployable" && (
-													<XIcon className="h-4 w-4 text-red-600" />
-												)}
-
-												{asset.status !== "deployable" &&
-													asset.status !== "undeployable" && (
-														<Wrench className="h-4 w-4 text-sky-600" />
+												<TableCell>
+													{asset.status === "deployable" && (
+														<CheckIcon className="h-4 w-4 text-green-600" />
 													)}
-											</TableCell>
-											<TableCell>{asset.assetTag}</TableCell>
-											<TableCell className="hidden md:table-cell">
-												{asset.serialNumber}
-											</TableCell>
+													{asset.status === "undeployable" && (
+														<XIcon className="h-4 w-4 text-red-600" />
+													)}
 
-											<TableCell>
-												{asset.status === "deployable" && (
-													<div className="flex gap-2 items-center">
-														{/* <EditAsset asset={asset} /> */}
-														<NewBooking asset={asset} />
-														{/* <DeleteAsset assetId={asset.id} /> */}
-													</div>
-												)}
+													{asset.status !== "deployable" &&
+														asset.status !== "undeployable" && (
+															<Wrench className="h-4 w-4 text-sky-600" />
+														)}
+												</TableCell>
+												<TableCell>{asset.assetTag}</TableCell>
+												<TableCell className="hidden md:table-cell">
+													{asset.serialNumber}
+												</TableCell>
 
-												{/* <DropdownMenu>
+												<TableCell>
+													{asset.status === "deployable" && (
+														<div className="flex gap-2 items-center">
+															{/* <EditAsset asset={asset} /> */}
+															<NewBooking asset={asset} />
+															{/* <DeleteAsset assetId={asset.id} /> */}
+														</div>
+													)}
+
+													{/* <DropdownMenu>
 													<DropdownMenuTrigger asChild>
 														<Button
 															aria-haspopup="true"
@@ -202,22 +205,25 @@ export default async function AssetsPage({
 														</DropdownMenuItem>
 													</DropdownMenuContent>
 												</DropdownMenu> */}
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						)}
+												</TableCell>
+											</TableRow>
+										))}
+									</TableBody>
+								</Table>
+							)}
+						</Suspense>
 					</CardContent>
-					{assets.length > 0 && (
-						<CardFooter>
-							<div className="text-xs text-muted-foreground">
-								Showing{" "}
-								<strong>1-{assets.length > 10 ? 10 : assets.length}</strong> of{" "}
-								<strong>{assets.length}</strong> bookings
-							</div>
-						</CardFooter>
-					)}
+					<Suspense fallback={<LoadingSpinner />}>
+						{assets.length > 0 && (
+							<CardFooter>
+								<div className="text-xs text-muted-foreground">
+									Showing{" "}
+									<strong>1-{assets.length > 10 ? 10 : assets.length}</strong>{" "}
+									of <strong>{assets.length}</strong> bookings
+								</div>
+							</CardFooter>
+						)}
+					</Suspense>
 				</Card>
 			</TabsContent>
 		</Tabs>

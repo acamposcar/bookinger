@@ -32,7 +32,6 @@ export default async function Calendar() {
 			backgroundColor: generateColorFromUserId(booking.user.id),
 		};
 	});
-	console.log(events);
 	return (
 		<>
 			<CalendarComponent events={events} />
