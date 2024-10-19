@@ -1,10 +1,9 @@
-import { getAssets, searchAssetsBySimilarity } from "@/lib/db/queries";
+import { getMyBookings, getUser } from "@/lib/db/queries";
 
 import Image from "next/image";
 import {
 	CheckIcon,
 	Download,
-	Drill,
 	ListFilter,
 	MoreHorizontal,
 	PlusCircle,
@@ -43,20 +42,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditBooking from "./edit";
 import DeleteBooking from "./delete";
 import AddBooking from "./add";
-import DeleteAsset from "./delete";
-import EditAsset from "./edit";
-import NewBooking from "./new-booking";
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import type { Asset, Booking, User } from "@/lib/db/schema";
+import { is } from "drizzle-orm";
 
-export default async function AssetsPage({
-	searchParams,
+export default async function BookingsList({
+	isMyBookings,
+	bookings,
 }: {
-	searchParams: { [key: string]: string };
+	bookings: (Booking & { asset: Asset; user: User })[];
+	isMyBookings: boolean;
 }) {
-	const assets = searchParams.q
-		? await searchAssetsBySimilarity({ searchTerm: searchParams.q })
-		: await getAssets();
+	const user = await getUser();
 
 	return (
 		<Tabs defaultValue="all">
@@ -101,13 +98,17 @@ export default async function AssetsPage({
 			<TabsContent value="all">
 				<Card x-chunk="A list of bookings in a table with actions.">
 					<CardHeader>
-						<CardTitle className="text-2xl">Assets</CardTitle>
-						<CardDescription>Manage the assets.</CardDescription>
+						<CardTitle className="text-2xl">
+							{isMyBookings ? "My Bookings" : "Bookings"}
+						</CardTitle>
+						<CardDescription>
+							{isMyBookings ? "Manage your bookings." : "View all bookings."}
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						{assets.length === 0 ? (
+						{bookings.length === 0 ? (
 							<p className="text-muted-foreground flex items-center justify-center min-h-44">
-								No assets found.
+								No bookings found.
 							</p>
 						) : (
 							<Table>
@@ -116,68 +117,93 @@ export default async function AssetsPage({
 										<TableHead className="hidden w-[100px] md:table-cell">
 											<span className="sr-only">Image</span>
 										</TableHead>
-										<TableHead>Name</TableHead>
-										<TableHead>Status</TableHead>
-										<TableHead>Tag</TableHead>
+										<TableHead>Asset</TableHead>
+										{!isMyBookings && <TableHead>Booked by</TableHead>}
+										<TableHead>Project</TableHead>
 
 										<TableHead className="hidden md:table-cell">
-											Serial Number
+											Description
 										</TableHead>
-
+										<TableHead className="hidden md:table-cell">
+											Start at
+										</TableHead>
+										<TableHead className="hidden md:table-cell">
+											End at
+										</TableHead>
+										<TableHead className="table-cell md:hidden">Date</TableHead>
+										<TableHead className="hidden md:table-cell">
+											Status
+										</TableHead>
 										<TableHead>
 											<span className="sr-only">Actions</span>
 										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{assets.map((asset) => (
-										<TableRow key={asset.id}>
+									{bookings.map((booking) => (
+										<TableRow key={booking.id}>
 											<TableCell className="hidden md:table-cell">
-												<Link href={`/dashboard/assets/${asset.id}`}>
-													<Image
-														alt={asset.name}
-														className="aspect-square rounded-md object-contain"
-														height="64"
-														src={
-															asset.image || "https://via.placeholder.com/64"
-														}
-														width="64"
-													/>
-												</Link>
+												<Image
+													alt={booking.asset.name}
+													className="aspect-square rounded-md object-contain"
+													height="64"
+													src={
+														booking.asset.image ||
+														"https://via.placeholder.com/64"
+													}
+													width="64"
+												/>
 											</TableCell>
 											<TableCell className="font-medium">
-												<Link href={`/dashboard/assets/${asset.id}`}>
-													{asset.name}{" "}
+												<Link href={`/dashboard/assets/${booking.asset.id}`}>
+													{booking.asset.name}{" "}
 													<span className="text-muted-foreground font-normal hidden md:inline-block">
-														({asset.assetTag})
+														({booking.asset.assetTag})
 													</span>
 												</Link>
 											</TableCell>
+											{!isMyBookings && (
+												<TableCell className="font-medium">
+													{booking.user.name ||
+														booking.user.email.split("@")[0]}
+												</TableCell>
+											)}
 
-											<TableCell>
-												{asset.status === "deployable" && (
+											<TableCell>{booking.project}</TableCell>
+											<TableCell className="hidden md:table-cell">
+												{booking.description}
+											</TableCell>
+											<TableCell className="hidden md:table-cell">
+												{booking.start.toLocaleDateString()}
+											</TableCell>
+											<TableCell className="hidden md:table-cell">
+												{booking.end.toLocaleDateString()}
+											</TableCell>
+											<TableCell className="table-cell md:hidden">
+												<div>{booking.start.toLocaleDateString()}</div>
+												<div>{booking.end.toLocaleDateString()}</div>
+											</TableCell>
+											<TableCell className="hidden md:table-cell">
+												{booking.asset.status === "deployable" && (
 													<CheckIcon className="h-4 w-4 text-green-600" />
 												)}
-												{asset.status === "undeployable" && (
+												{booking.asset.status === "undeployable" && (
 													<XIcon className="h-4 w-4 text-red-600" />
 												)}
 
-												{asset.status !== "deployable" &&
-													asset.status !== "undeployable" && (
+												{booking.asset.status !== "deployable" &&
+													booking.asset.status !== "undeployable" && (
 														<Wrench className="h-4 w-4 text-sky-600" />
 													)}
 											</TableCell>
-											<TableCell>{asset.assetTag}</TableCell>
-											<TableCell className="hidden md:table-cell">
-												{asset.serialNumber}
-											</TableCell>
-
 											<TableCell>
-												{asset.status === "deployable" && (
+												{user?.id === booking.userId && (
 													<div className="flex gap-2 items-center">
-														{/* <EditAsset asset={asset} /> */}
-														<NewBooking asset={asset} />
-														{/* <DeleteAsset assetId={asset.id} /> */}
+														<EditBooking booking={booking} />
+														<DeleteBooking
+															bookingId={booking.id}
+															bookingUserId={booking.userId}
+														/>
 													</div>
 												)}
 
@@ -209,12 +235,12 @@ export default async function AssetsPage({
 							</Table>
 						)}
 					</CardContent>
-					{assets.length > 0 && (
+					{bookings.length > 0 && (
 						<CardFooter>
 							<div className="text-xs text-muted-foreground">
 								Showing{" "}
-								<strong>1-{assets.length > 10 ? 10 : assets.length}</strong> of{" "}
-								<strong>{assets.length}</strong> bookings
+								<strong>1-{bookings.length > 10 ? 10 : bookings.length}</strong>{" "}
+								of <strong>{bookings.length}</strong> bookings
 							</div>
 						</CardFooter>
 					)}

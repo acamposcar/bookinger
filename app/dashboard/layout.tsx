@@ -17,6 +17,7 @@ import {
 	PocketKnife,
 	TrainFront,
 	User,
+	LayoutDashboard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -52,10 +53,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	}
 
 	const navItems = [
-		{ href: "/dashboard", icon: Calendar, label: "Bookings" },
+		{ href: "/dashboard", icon: LayoutDashboard, label: "My Bookings" },
+		{ href: "/dashboard/calendar", icon: Calendar, label: "Calendar" },
 		{ href: "/dashboard/assets", icon: PocketKnife, label: "Assets" },
-		{ href: "/dashboard/team", icon: Users2, label: "Team" },
-		{ href: "/dashboard/activity", icon: LineChart, label: "Activity" },
+		// { href: "/dashboard/team", icon: Users2, label: "Team" },
+		// { href: "/dashboard/activity", icon: LineChart, label: "Activity" },
 	];
 
 	function handleSearch(e: React.FormEvent<HTMLFormElement>) {

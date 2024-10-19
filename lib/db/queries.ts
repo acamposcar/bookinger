@@ -107,6 +107,21 @@ export async function getMyBookings() {
 	});
 }
 
+export async function getAssetBookings(assetId: string) {
+	const user = await getUser();
+	if (!user) {
+		throw new Error("User not authenticated");
+	}
+	return await db.query.bookings.findMany({
+		with: {
+			asset: true,
+			user: true,
+		},
+		where: eq(bookings.assetId, assetId),
+		orderBy: (bookings, { asc }) => [asc(bookings.start)],
+	});
+}
+
 export async function getBooking(bookingId: string) {
 	const user = await getUser();
 	if (!user) {

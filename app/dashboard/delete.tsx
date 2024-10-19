@@ -14,9 +14,11 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { deleteBooking } from "./actions";
-import { is } from "drizzle-orm";
 
-export default function DeleteBooking({ bookingId }: { bookingId: string }) {
+export default function DeleteBooking({
+	bookingId,
+	bookingUserId,
+}: { bookingId: string; bookingUserId: string }) {
 	const [state, removeAction, isRemovePending] = useActionState<
 		ActionState,
 		FormData

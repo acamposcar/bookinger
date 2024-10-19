@@ -5,10 +5,19 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import type { Asset, Booking, User } from "@/lib/db/schema";
+import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function CalendarComponent(events: any) {
+export default function CalendarComponent({
+	events,
+}: {
+	events: any;
+}) {
 	const [weekendsVisible, setWeekendsVisible] = useState(true);
 	const [currentEvents, setCurrentEvents] = useState([]);
+	const router = useRouter();
 
 	function handleWeekendsToggle() {
 		setWeekendsVisible(!weekendsVisible);
@@ -32,13 +41,7 @@ export default function CalendarComponent(events: any) {
 	}
 
 	function handleEventClick(clickInfo: any) {
-		if (
-			confirm(
-				`Are you sure you want to delete the event '${clickInfo.event.title}'`,
-			)
-		) {
-			clickInfo.event.remove();
-		}
+		router.push(clickInfo.event.url);
 	}
 
 	function handleEvents(events: any) {
@@ -46,45 +49,64 @@ export default function CalendarComponent(events: any) {
 	}
 
 	return (
-		<div className="demo-app">
-			{/* <Sidebar
-        weekendsVisible={weekendsVisible}
-        handleWeekendsToggle={handleWeekendsToggle}
-        currentEvents={currentEvents}
-      /> */}
-			<div className="demo-app-main">
-				<FullCalendar
-					plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-					headerToolbar={{
-						left: "prev,next today",
-						center: "title",
-						right: "dayGridMonth,timeGridWeek,timeGridDay",
-					}}
-					initialView="dayGridMonth"
-					editable={true}
-					selectable={true}
-					selectMirror={true}
-					dayMaxEvents={true}
-					weekends={weekendsVisible}
-					events={events} // alternatively, use the `events` setting to fetch from a feed
-					select={handleDateSelect}
-					eventContent={renderEventContent} // custom render function
-					eventClick={handleEventClick}
-					eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-					/* you can update a remote database when these fire:
+		<Card>
+			<CardContent>
+				<div className="py-8 sm:px-4">
+					{/* <Sidebar
+				weekendsVisible={weekendsVisible}
+				handleWeekendsToggle={handleWeekendsToggle}
+				currentEvents={currentEvents}
+			/> */}
+					<div className="max-w-7xl mx-auto">
+						<FullCalendar
+							plugins={[
+								dayGridPlugin,
+								timeGridPlugin,
+								interactionPlugin,
+								listPlugin,
+							]}
+							headerToolbar={{
+								left: "prev,next today",
+								center: "title",
+								right: "dayGridMonth,dayGridWeek,listMonth",
+							}}
+							initialView="dayGridMonth"
+							views={{
+								dayGridFourWeeks: {
+									type: "dayGridWeek",
+									duration: { weeks: 4 },
+								},
+							}}
+							nowIndicator={true}
+							editable={false}
+							selectable={false}
+							selectMirror={true}
+							dayMaxEvents={true}
+							weekNumbers={true}
+							weekends={weekendsVisible}
+							events={events} // alternatively, use the `events` setting to fetch from a feed
+							select={handleDateSelect}
+							eventContent={renderEventContent} // custom render function
+							eventClick={handleEventClick}
+							eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+							/* you can update a remote database when these fire:
         eventAdd={function(){}}
         eventChange={function(){}}
         eventRemove={function(){}}
         */
-				/>
-			</div>
-		</div>
+						/>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
 	);
 }
 
 function renderEventContent(eventInfo: any) {
 	return (
 		<>
+			{/* Use same bg-color for all events for the same user */}
+
 			<i>{eventInfo.event.title}</i>
 		</>
 	);
